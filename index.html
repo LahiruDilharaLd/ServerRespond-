@@ -34,7 +34,7 @@
       width: 100%;
       height: 100%;
       padding: 0px;
-      font-size: 9px;
+      font-size: 19px;
       color: #00ff00;
       overflow: hidden;
       white-space: pre-wrap;
@@ -72,7 +72,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const chars = '日ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍｦｲｸｺｿﾁﾄﾉﾌﾔﾖﾙﾚﾛﾝ0123456wxyz0123456789@#$%^&*';
-const fontSize = 5;
+const fontSize = 19;
 const columns = canvas.width/fontSize;
 const drops = [];
 
@@ -297,7 +297,7 @@ function consoleOutput() {
 }
 
 // Start both animations
-setInterval(drawMatrix, 50);
+setInterval(drawMatrix, 20);
 consoleOutput();
 
 // Handle window resize
