@@ -2,309 +2,218 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Matrix Hacker Terminal</title>
+  <title>Server Responded</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="keywords" content="Lahiru-Dilhara-personal-web-portfolio">
+  <meta name="description" content="Lahiru-Dilhara-personal-web-portfolio">
+  
   <style>
     @font-face {
       font-family: 'Source Code Pro';
-      src: local('Source Code Pro'), 
-           url(http://themes.googleusercontent.com/static/fonts/sourcecodepro/v4/mrl8jkM18OlOQN8JLgasDxM0YzuT7MdOe03otPbuUS0.woff) format('woff');
+      src: local('Source Code Pro'), url('https://fonts.gstatic.com/s/sourcecodepro/v14/HI_SiYsKILxRpg3hIP6sYzYb0d4.woff2') format('woff2');
     }
 
-    body {
-      font-family: 'Source Code Pro', monospace;
-      background-color: #000000;
+    :root {
+      --background-color: rgba(0, 0, 0, 0.8);
+      --primary-color: #00ff00;
+      --button-bg: #007BFF;
+      --button-color: #ffffff;
+      --button-hover-bg: #0056b3;
+      --matrix-color: #00ff00;
+    }
+
+    [data-theme="dark"] {
+      --background-color: rgba(18, 18, 18, 0.85);
+      --primary-color: #eeeeee;
+      --matrix-color: #00ff00;
+    }
+
+    [data-theme="light"] {
+      --background-color: rgba(255, 255, 255, 0.85);
+      --primary-color: #000000;
+      --matrix-color: #00ff00;
+    }
+
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Source Code Pro', monospace;
+      background-color: #000;
+      color: var(--primary-color);
       overflow: hidden;
     }
 
-    .matrix-container {
+    canvas#matrixCanvas {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: 1;
+      z-index: -1;
+      background-color: #000;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2em;
+      color: #00ff00;
+      margin: 20px 0;
     }
 
     .output-console {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      padding: 0px;
-      font-size: 19px;
+      padding: 10px 20px;
+      font-size: 5px;
       color: #00ff00;
-      overflow: hidden;
+      overflow-y: auto;
+      height: calc(100% - 50px);
       white-space: pre-wrap;
-      word-wrap: break-word;
       line-height: 1.2;
-      z-index: 2;
     }
 
-    p, span {
-      margin: 0;
+    .output-console p,
+    .output-console span {
       font-family: 'Source Code Pro', monospace;
-    }
-
-    .red-text {
-      color: #ff0000;
-    }
-
-    canvas {
-      opacity: 0.3;
+      margin: 0;
     }
   </style>
 </head>
 <body>
-<div class="matrix-container">
-  <canvas id="matrix"></canvas>
-</div>
+
+<canvas id="matrixCanvas"></canvas>
+<h3>Server Responded</h3>
 <div class="output-console"></div>
 
 <script>
-// Matrix background effect
-const canvas = document.getElementById('matrix');
-const ctx = canvas.getContext('2d');
+  // Matrix background effect
+  (function () {
+    const canvas = document.getElementById('matrixCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+    const matrixChars = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズヅブプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@#$%^&*()*&^%';
+    const fontSize = 10;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
 
-const chars = '日ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍｦｲｸｺｿﾁﾄﾉﾌﾔﾖﾙﾚﾛﾝ0123456wxyz0123456789@#$%^&*';
-const fontSize = 19;
-const columns = canvas.width/fontSize;
-const drops = [];
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-for(let x = 0; x < columns; x++) {
-    drops[x] = 1;
-}
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--matrix-color');
+      ctx.font = fontSize + 'px monospace';
 
-function drawMatrix() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    ctx.fillStyle = '#0F0';
-    ctx.font = fontSize + 'px monospace';
+      for (let i = 0; i < drops.length; i++) {
+        const text = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
+        ctx.fillText(text, x, y);
 
-    for(let i = 0; i < drops.length; i++) {
-        const text = chars[Math.floor(Math.random() * chars.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-        
-        if(drops[i] * fontSize > canvas.height && Math.random() > 0.975)
-            drops[i] = 0;
-        
+        if (y > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+
         drops[i]++;
+      }
+
+      requestAnimationFrame(drawMatrix);
     }
-}
 
-// Hacker terminal effect
-const outputConsole = document.querySelector('.output-console');
-let isProcessing = false, processTime = 0, lastProcess = 0;
+    drawMatrix();
 
-const commandResponses = ['Authorizing ',
-  'Authorized...',
-  'Access Granted...',
-  'Going Deeper...',
-  'Compression Complete.',
-  'Compilation of Data Structures Complete...',
-  'Entering Security Console...',
-  'Encryption Unsuccessful. Attempting Retry...',
-  'Waiting for response...',
-  '....Searching...',
-  'Calculating Space Requirements...',
-  'Bruteforce Successful...',
-  'Backdoor Injected...',
-  'Payload Delivered...',
-  'SSH Connection Established...',
-  'Proxy Server Ready...',
-  'Root Privileges Acquired...',
-  'Firewall Breached...',
-  'Session Hijacked...',
-  'Vulnerability Exploited...',
-  'SQL Injection Successful...',
-  'Malware Planted...',
-  'MAC Address Spoofed...',
-  'Traffic Successfully Monitored...',
-  'Privileged Access Gained...',
-  'Command Executed Successfully...',
-  'Reverse Shell Established...',
-  'Password Hash Cracked...',
-  'Zero-Day Exploit Delivered...',
-  'Exfiltrating Data...',
-  'Database Compromised...',
-  'SSL/TLS Handshake Complete...',
-  'Kernel Module Loaded...',
-  'Blockchain Node Syncing...',
-  'Two-Factor Authentication Bypassed...',
-  'Intrusion Detection System Evaded...',
-  'Packet Data Captured...',
-  'Operating System Fingerprinted...',
-  'Keylogger Injected...',
-  'Memory Dump Completed...',
-  'Trojan Horse Deployed...',
-  'Dark Web Forums Scraped...',
-  'Exploit Kit Ready...',
-  'FTP Credentials Stolen...',
-  'Proxy Chain Established...',
-  'Router Logs Analyzed...',
-  'Botnet Command Issued...',
-  'Sandbox Evasion Successful...',
-  'Remote Access Tool Installed...',
-  'Exploit Executed Successfully...',
-  'Dark Web Purchase Confirmed...'];
-const commandParts = ['Data Structure',
-  'http://wwjd.com?au&2',
-  'Texture',
-  'TPS Reports',
-  ' .... Searching ... ',
-  'http://zanb.se/?23&88&far=2',
-  'http://ab.ret45-33/?timing=1ww',
-  'Internal Server',
-  'Encrypted Files',
-  'User Credentials',
-  'Remote Host',
-  'Suspicious Activity Logs',
-  'Root Access Point',
-  'Public/Private Key',
-  'Virtual Machine Instance',
-  'Tor Exit Node',
-  'Mainframe',
-  'Security Protocols',
-  'External Hard Drive',
-  'Web Application',
-  'Database Tables',
-  'Router Settings',
-  'Admin Credentials',
-  'Command & Control Server',
-  'Cloud Infrastructure',
-  'Password Hashes',
-  'Zero-Day Exploit',
-  'Ransomware',
-  'SMTP Server',
-  'SSL/TLS Certificates',
-  'Kernel Modules',
-  'Session Cookies',
-  'Blockchain Nodes',
-  'Proxy Server',
-  'Target Device',
-  'IP Addresses',
-  'Credential Dumps',
-  'FTP Server',
-  'Dark Web Marketplace',
-  'Malware Dropper',
-  'Exploit Database',
-  'Log Files',
-  'System Registry',
-  'Memory Dumps',
-  'Sandbox Environment',
-  'Bootloader',
-  'Router Firewall',
-  'Security Software'];
-const commandStart = ['Performing DNS Lookups for ',
-  'Searching ',
-  'Analyzing ',
-  'Estimating Approximate Location of ',
-  'Compressing ',
-  'Requesting Authorization From : ',
-  'wget -a -t ',
-  'tar -xzf ',
-  'Entering Location ',
-  'Compilation Started of ',
-  'Downloading ',
-  'Initializing Proxy Server ',
-  'Attempting SSH Connection ',
-  'Scanning Network ',
-  'Bruteforcing Passwords for ',
-  'Decrypting Data from ',
-  'Injecting Payload into ',
-  'Opening Reverse Shell for ',
-  'Phishing Target: ',
-  'Executing SQL Injection on ',
-  'Bypassing Firewall for ',
-  'Planting Malware in ',
-  'Exploiting Vulnerability in ',
-  'Escalating Privileges for ',
-  'Monitoring Traffic at ',
-  'Hijacking Session at ',
-  'Spoofing MAC Address for ',
-  'Compromising Server at ',
-  'Injecting Malicious Script into ',
-  'Establishing Backdoor into ',
-  'Mapping Network for ',
-  'Overclocking System Resources ',
-  'Generating Hash for ',
-  'Uploading Exploit to ',
-  'Forcing Password Reset on ',
-  'Enumerating Ports on ',
-  'Evading Intrusion Detection Systems for ',
-  'Interrogating Router Logs for ',
-  'Scraping Dark Web Forums for ',
-  'Compiling Threat Reports on ',
-  'Hijacking Web Sessions for ',
-  'Bypassing Two-Factor Authentication for ',
-  'Capturing Packet Data from ',
-  'Sniffing Traffic from ',
-  'Fingerprinting Operating System for ',
-  'Injecting Keylogger into ',
-  'Mapping Subnets for ',
-  'Listening for Open Ports on ',
-  'Deploying Trojan Horse to ',
-  'Dumping Memory from ',
-  'Compiling Exploit Kit for '];
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  })();
+</script>
 
-function consoleOutput() {
+<script>
+  const outputConsole = document.querySelector('.output-console');
+  let isProcessing = false, processTime = 0, lastProcess = 0;
+
+  const commandResponses = [
+    'Authorizing ', 'Authorized...', 'Access Granted...', 'Going Deeper...',
+    'Compression Complete.', 'Compilation Complete...', 'Encryption Failed. Retrying...',
+    'SSH Connection Established...', 'Proxy Ready...', 'Root Access Gained...',
+    'Firewall Breached...', 'Session Hijacked...', 'Vulnerability Exploited...',
+    'SQL Injection Successful...', 'MAC Address Spoofed...', 'Command Executed...',
+    'Reverse Shell Established...', 'Password Cracked...', 'Exfiltrating Data...',
+    'Database Compromised...', 'Kernel Module Loaded...', 'Dark Web Forums Scraped...',
+    'Remote Access Installed...', 'Exploit Executed...', 'Intrusion Successful...'
+  ];
+
+  const commandParts = [
+    'Data Structure', 'Encrypted Files', 'User Credentials', 'Remote Host',
+    'Root Access Point', 'Public/Private Key', 'Tor Exit Node', 'Mainframe',
+    'Security Protocols', 'Database Tables', 'Admin Credentials', 'Command Server',
+    'Password Hashes', 'Zero-Day Exploit', 'SSL/TLS Certificates', 'Blockchain Nodes',
+    'FTP Server', 'Dark Web Marketplace', 'Router Firewall', 'Memory Dumps'
+  ];
+
+  const commandStart = [
+    'Performing DNS Lookups for ', 'Searching ', 'Analyzing ',
+    'Estimating Location of ', 'Compressing ', 'wget -a -t ',
+    'Entering ', 'Downloading ', 'Initializing Proxy for ',
+    'Bruteforcing Passwords for ', 'Injecting Payload into ',
+    'Opening Reverse Shell for ', 'Phishing Target: ',
+    'Executing SQL Injection on ', 'Bypassing Firewall for ',
+    'Monitoring Traffic at ', 'Hijacking Session at ',
+    'Spoofing MAC Address for ', 'Compromising Server at ',
+    'Mapping Network for ', 'Uploading Exploit to ',
+    'Forcing Password Reset on ', 'Enumerating Ports on ',
+    'Scraping Dark Web Forums for ', 'Deploying Trojan to '
+  ];
+
+  function consoleOutput() {
     let textEl = document.createElement('p');
 
     if (isProcessing) {
-        textEl = document.createElement('span');
-        textEl.textContent += Math.random().toFixed(9) + " ";
-        if (Date.now() > lastProcess + processTime) {
-            isProcessing = false;
-        }
+      textEl = document.createElement('span');
+      textEl.textContent += Math.random().toFixed(9) + " ";
+      if (Date.now() > lastProcess + processTime) {
+        isProcessing = false;
+      }
     } else {
-        const commandType = ~~(Math.random() * 5);
-        switch (commandType) {
-            case 0:
-                textEl.textContent = commandStart[~~(Math.random() * commandStart.length)] + 
-                                   commandParts[~~(Math.random() * commandParts.length)];
-                break;
-            case 3:
-                isProcessing = true;
-                processTime = ~~(Math.random() * 5000);
-                lastProcess = Date.now();
-            default:
-                textEl.textContent = commandResponses[~~(Math.random() * commandResponses.length)];
-                break;
-        }
+      const commandType = ~~(Math.random() * 5);
+      switch (commandType) {
+        case 0:
+          textEl.textContent = commandStart[~~(Math.random() * commandStart.length)] + commandParts[~~(Math.random() * commandParts.length)];
+          break;
+        case 3:
+          isProcessing = true;
+          processTime = ~~(Math.random() * 3000);
+          lastProcess = Date.now();
+        default:
+          textEl.textContent = commandResponses[~~(Math.random() * commandResponses.length)];
+          break;
+      }
     }
 
-    if (Math.random() < 0.2) {
-        textEl.classList.add('red-text');
+    if (Math.random() < 0.05) {
+      textEl.style.color = 'red';
     }
 
     outputConsole.appendChild(textEl);
     outputConsole.scrollTop = outputConsole.scrollHeight;
 
     if (outputConsole.scrollHeight > window.innerHeight * 2) {
-        const removeNodes = outputConsole.querySelectorAll('p');
-        for (let n = 0; n < ~~(removeNodes.length / 3); n++) {
-            outputConsole.removeChild(removeNodes[n]);
-        }
+      const nodes = outputConsole.querySelectorAll('p');
+      for (let i = 0; i < Math.floor(nodes.length / 3); i++) {
+        outputConsole.removeChild(nodes[i]);
+      }
     }
 
-    setTimeout(consoleOutput, ~~(Math.random() * 500));
-}
+    setTimeout(consoleOutput, Math.random() * 400);
+  }
 
-// Start both animations
-setInterval(drawMatrix, 20);
-consoleOutput();
-
-// Handle window resize
-window.onresize = () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-};
+  consoleOutput();
 </script>
+
 </body>
 </html>
